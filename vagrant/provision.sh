@@ -14,15 +14,6 @@ sudo add-apt-repository ppa:ondrej/nginx
 sudo apt update -y
 sudo apt install -y vim git curl wget zip supervisor build-essential libssl-dev software-properties-common ca-certificates apt-transport-https gnupg-agent
 
-# Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt update -y
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose
-sudo groupadd docker
-sudo usermod -aG docker $USER
-
 # Mysql (5.7 --> https://www.claudiokuenzler.com/blog/991/install-mysql-5.7-on-ubuntu-20.04-focal-avoid-8.0-packages)
 echo "### THIS FILE IS AUTOMATICALLY CONFIGURED ###
 # You may comment out entries below, but any other modifications may be lost.
@@ -108,7 +99,6 @@ sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/va
 # SSH Keys
 cp /home/vagrant/provision/ssh/id_rsa* /home/vagrant/.ssh/
 chmod 400 /home/vagrant/.ssh/id_rsa*
-ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
 
 # FatturaPA
 cd /home/vagrant/fatturapa-testsdi
@@ -127,7 +117,7 @@ sudo chmod g+w storage/logs/laravel.log
 sudo chown -R vagrant storage/framework
 sudo chown -R vagrant bootstrap/cache
 php artisan key:generate
-php4 artisan migrate:fresh --seed
+php artisan migrate:fresh --seed
 cd /home/vagrant/fatturapa-testsdi/core
 php vendor/bin/phinx migrate -c config-phinx.php
 
