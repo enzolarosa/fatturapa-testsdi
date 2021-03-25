@@ -1,17 +1,17 @@
 <?php
 
-
 namespace FatturaPa\Core\Actors;
 
 use DateInterval;
 use DateTime;
 use Exception;
-use FatturaPa\Core\Models\Database;
-use FatturaPa\Core\Models\Invoice;
-use FatturaPa\Core\Models\Notification;
-use FatturaPa\Core\Models\Channel;
-use Illuminate\Support\Facades\URL;
 use FatturaPa\Core\Models\Actor;
+use FatturaPa\Core\Models\Channel;
+use FatturaPa\Core\Models\Database;
+use FatturaPa\Core\Models\Notification;
+use InvalidArgumentException;
+use SoapFault;
+use URL;
 
 define('TIME_TRAVEL_DB', $_SERVER['DOCUMENT_ROOT'] . '/core/storage/time_travel.json');
 
@@ -22,29 +22,33 @@ class Base
     {
         file_put_contents(TIME_TRAVEL_DB, json_encode($data));
     }
+
     public static function retrieve()
     {
         $data = json_decode(file_get_contents(TIME_TRAVEL_DB), true);
-        $data['real_time'] = \DateTime::__set_state($data['real_time']);
-        $data['simulated_time'] = \DateTime::__set_state($data['simulated_time']);
+        $data['real_time'] = DateTime::__set_state($data['real_time']);
+        $data['simulated_time'] = DateTime::__set_state($data['simulated_time']);
         return $data;
     }
+
     public static function resetTime()
     {
         $data = array(
-            'real_time' => new \DateTime(),
-            'simulated_time' => new \DateTime(),
+            'real_time' => new DateTime(),
+            'simulated_time' => new DateTime(),
             'speed' => 1.0
         );
         self::persist($data);
     }
+
     public static function setDateTime($datetime)
     {
         $data = self::retrieve();
-        $data['real_time'] = new \DateTime();
+        $data['real_time'] = new DateTime();
         $data['simulated_time'] = $datetime;
         self::persist($data);
     }
+
     public static function setSpeed($speed)
     {
         self::getDateTime();
@@ -52,18 +56,20 @@ class Base
         $data['speed'] = $speed;
         self::persist($data);
     }
+
     public static function getDateTime()
     {
         $data = self::retrieve();
-        $real_time_now = new \DateTime();
+        $real_time_now = new DateTime();
 
         $delta_seconds = round(($real_time_now->getTimestamp() - $data['real_time']->getTimestamp()) * $data['speed']);
-        $simulated_time_now = $data['simulated_time']->add(new \DateInterval("PT${delta_seconds}S"));
+        $simulated_time_now = $data['simulated_time']->add(new DateInterval("PT${delta_seconds}S"));
         $data['real_time'] = $real_time_now;
         $data['simulated_time'] = $simulated_time_now;
         self::persist($data);
         return $data['simulated_time'];
     }
+
     private static function notification($notification_blob, $filename, $type, $invoice_id, $status)
     {
         new Database();
@@ -80,10 +86,12 @@ class Base
             ]
         );
     }
+
     public static function receive($notification_blob, $filename, $type, $invoice_id)
     {
         self::notification($notification_blob, $filename, $type, $invoice_id, 'N_RECEIVED');
     }
+
     public static function enqueue($notification_blob, $filename, $type, $invoice_id)
     {
         Notification::where('status', '=', 'N_PENDING')
@@ -91,26 +99,28 @@ class Base
             ->update(array('status' => 'N_OBSOLETE'));
         self::notification($notification_blob, $filename, $type, $invoice_id, 'N_PENDING');
     }
+
     public static function dispatchNotification($service, $addressee, $endpoint, $operation, $fileSdI)
     {
-        echo 'dispatchNotification to: ' . $addressee  . '<br/>' . PHP_EOL;
-        $service->__setLocation(HOSTMAIN.$addressee."/soap/$endpoint/");
+        echo 'dispatchNotification to: ' . $addressee . '<br/>' . PHP_EOL;
+        $service->__setLocation(HOSTMAIN . $addressee . "/soap/$endpoint/");
         $sent = false;
         try {
             $service->$operation($fileSdI);
             $sent = true;
         } catch (SoapFault $e) {
-            echo "SOAP Fault: (faultcode: {".$e->faultcode."}, faultstring: {".$e->faultstring."})";
+            echo "SOAP Fault: (faultcode: {" . $e->faultcode . "}, faultstring: {" . $e->faultstring . "})";
             exit;
         }
         return $sent;
     }
+
     public static function getActor()
     {
         new Database();
         if (class_exists('\URL')) {
             // we're inside Laravel: URL is defined in rpc/config/app.php
-            $url = \URL::current();
+            $url = URL::current();
             $urlData = explode("/", $url);
             $actor = @$urlData[3];
         } else {
@@ -126,6 +136,7 @@ class Base
 
         return $actor;
     }
+
     public static function getIssuers()
     {
         $channels = collect();
@@ -140,11 +151,12 @@ class Base
         }
         return $issuers;
     }
+
     public static function getActors()
     {
         $channels = collect();
         try {
-        $channels = Channel::select(['issuer'])->distinct()->get();
+            $channels = Channel::select(['issuer'])->distinct()->get();
         } catch (Exception $ex) {
 
         }
@@ -154,17 +166,19 @@ class Base
         }
         return $actors;
     }
+
     public static function getChannels()
     {
-    	$Actorslist = Actor::select(['id'])->distinct()->get();
+        $Actorslist = Actor::select(['id'])->distinct()->get();
         $channels = array();
         foreach ($Actorslist->toArray() as $k => $channel) {
-        	$cedente = Channel::where('issuer', '=', $channel['id'])->pluck('cedente');
-			$channels[$k]['id']=$channel['id'];
-            $channels[$k]['cedenti']=$cedente->toArray();
+            $cedente = Channel::where('issuer', '=', $channel['id'])->pluck('cedente');
+            $channels[$k]['id'] = $channel['id'];
+            $channels[$k]['cedenti'] = $cedente->toArray();
         }
         return $channels;
     }
+
     public static function unpack($xmlString)
     {
         // defend against XML External Entity Injection
@@ -172,13 +186,13 @@ class Base
         $collapsed_xml_string = preg_replace("/\s+/", "", $xmlString);
         $collapsed_xml_string = $collapsed_xml_string ? $collapsed_xml_string : $xmlString;
         if (preg_match("/\<!DOCTYPE/i", $collapsed_xml_string)) {
-            throw new \InvalidArgumentException('Invalid XML: Detected use of illegal DOCTYPE');
+            throw new InvalidArgumentException('Invalid XML: Detected use of illegal DOCTYPE');
         }
 
         libxml_use_internal_errors(true);
         $xml = simplexml_load_string($xmlString, 'SimpleXMLElement', LIBXML_NOWARNING);
         if ($xml === false) {
-            throw new \InvalidArgumentException("Cannot load XML\n");
+            throw new InvalidArgumentException("Cannot load XML\n");
         }
         return $xml;
     }
