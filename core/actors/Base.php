@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use SoapFault;
 use URL;
 
-define('TIME_TRAVEL_DB', $_SERVER['DOCUMENT_ROOT'] . '/core/storage/time_travel.json');
+define('TIME_TRAVEL_DB', __DIR__ . '/../../core/storage/time_travel.json');
 
 class Base
 {
