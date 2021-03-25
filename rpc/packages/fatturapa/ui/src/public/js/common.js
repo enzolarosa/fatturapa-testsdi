@@ -8,7 +8,7 @@ var EventBus = new Vue();
 function get(url, element) {
     var request = new XMLHttpRequest();
     request.open("GET", url);
-    request.onload = function() {
+    request.onload = function () {
         if (request.status == 200) {
             if (element) {
                 document.getElementById(element).innerHTML = request.responseText;
@@ -26,7 +26,7 @@ function post(url, parameter, element) {
     var request = new XMLHttpRequest();
     request.open("POST", url);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    request.onload = function() {
+    request.onload = function () {
         if ((request.status != 200) && (request.status != 201)) {
             console.error(request.responseText);
             Toastify({
@@ -70,7 +70,7 @@ function sendReceiveData(dataTo, verb, url, callback) {
     console.log('sendReceiveData ' + verb + ' ' + url);
     var request = new XMLHttpRequest();
     console.log(verb + ' ' + url);
-    request.onload = function() {
+    request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
             if (request.responseText) {
                 console.log('sendReceiveData request success: ' + request.responseText.substring(0, 100) + '...');
@@ -99,7 +99,7 @@ function sendReceiveData(dataTo, verb, url, callback) {
             }).showToast();
         }
     }; // onload
-    request.onerror = function(e) {
+    request.onerror = function (e) {
         Toastify({
             text: 'Errore di connessione, riprova.',
             duration: 5000,
@@ -129,7 +129,7 @@ function refreshClock() {
     $.ajax({
         url: url,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             if (clock) {
                 window.clearInterval(clock);
             }
@@ -139,7 +139,7 @@ function refreshClock() {
             var date = new Date(timestamp * 1000);
             $("#dateTime").html(date.toLocaleString());
             if (speed > 0) {
-                clock = window.setInterval(function() {
+                clock = window.setInterval(function () {
                     var new_wallclock = new Date().getTime();
                     var new_timestamp = timestamp + (new_wallclock - wallclock) * speed / 1000.0;
                     date = new Date(new_timestamp * 1000);
@@ -149,7 +149,7 @@ function refreshClock() {
                 }, 1000); // refresh rate in milliseconds
             }
         },
-        error: function(data) {
+        error: function (data) {
             Toastify({
                 text: "Errore caricamento in: " + url + ", riprova.",
                 duration: 5000,
@@ -162,7 +162,7 @@ function refreshClock() {
 }
 
 $(document).ready(refreshClock);
-window.onunload = function() {
+window.onunload = function () {
     if (clock) {
         window.clearInterval(clock);
     }

@@ -5,27 +5,27 @@
 "use strict";
 
 Vue.component('invoice-table', {
-  props: ['endpoint', 'title'],
-  data: function () {
-    return {
-      invoices: []
-    }
-  },
-  mounted: function () {
-    var self = this;
-    var request = new XMLHttpRequest();
-    request.open("GET", self.endpoint);
-    request.onload = function() {
-        if (request.status == 200) {
-            if (request.responseText) {
-                var invoices = JSON.parse(request.responseText);
-                self.invoices = invoices;
-            }
+    props: ['endpoint', 'title'],
+    data: function () {
+        return {
+            invoices: []
         }
-    };
-    request.send();
-  },
-  template: '\
+    },
+    mounted: function () {
+        var self = this;
+        var request = new XMLHttpRequest();
+        request.open("GET", self.endpoint);
+        request.onload = function () {
+            if (request.status == 200) {
+                if (request.responseText) {
+                    var invoices = JSON.parse(request.responseText);
+                    self.invoices = invoices;
+                }
+            }
+        };
+        request.send();
+    },
+    template: '\
   <div class="card mb-3">\
   <div class="card-header">\
   <i class="fas fa-table"></i> {{ title }}</div>\
@@ -47,9 +47,9 @@ Vue.component('invoice-table', {
   </div>'
 });
 var app = new Vue({
-  el: '#tables'
+    el: '#tables'
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log("DOM fully loaded and parsed");
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("DOM fully loaded and parsed");
 });

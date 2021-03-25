@@ -3,7 +3,7 @@
 if (!class_exists('\FatturaPa\Core\Actors\Base')) {
     return false;
 }
-        
+
 use FatturaPa\Core\Actors\Base;
 
 // actor-specific routes

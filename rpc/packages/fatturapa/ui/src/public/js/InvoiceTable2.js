@@ -6,35 +6,35 @@
 
 Vue.component('invoice-table2', {
     props: ['endpoint', 'title', 'description', 'button', 'action', 'home'],
-    data: function() {
+    data: function () {
         return {
             invoices: []
         };
     },
-    mounted: function() {
+    mounted: function () {
         this.loadData();
     },
-    created: function() {
+    created: function () {
         var self = this;
-        EventBus.$on('refreshTables', function() {
+        EventBus.$on('refreshTables', function () {
             self.loadData();
         });
     },
     methods: {
-        doit: function() {
+        doit: function () {
             post(this.home + this.action);
         },
-        accept: function(id) {
+        accept: function (id) {
             post(this.home + "/rpc/accept/" + id);
         },
-        refuse: function(id) {
+        refuse: function (id) {
             post(this.home + "/rpc/refuse/" + id);
         },
-        loadData: function() {
+        loadData: function () {
             var self = this;
             var request = new XMLHttpRequest();
             request.open("GET", self.home + self.endpoint);
-            request.onload = function() {
+            request.onload = function () {
                 if (request.status == 200) {
                     if (request.responseText) {
                         var data = JSON.parse(request.responseText);

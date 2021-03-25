@@ -6,29 +6,29 @@
 
 Vue.component('invoice-table', {
     props: ['endpoint', 'title', 'description', 'button', 'action', 'home'],
-    data: function() {
+    data: function () {
         return {
             invoices: []
         };
     },
-    mounted: function() {
+    mounted: function () {
         this.loadData();
     },
-    created: function() {
+    created: function () {
         var self = this;
-        EventBus.$on('refreshTables', function() {
+        EventBus.$on('refreshTables', function () {
             self.loadData();
         });
     },
     methods: {
-        doit: function() {
+        doit: function () {
             post(this.home + this.action);
         },
-        loadData: function() {
+        loadData: function () {
             var self = this;
             var request = new XMLHttpRequest();
             request.open("GET", self.home + self.endpoint);
-            request.onload = function() {
+            request.onload = function () {
                 if (request.status == 200) {
                     if (request.responseText) {
                         var data = JSON.parse(request.responseText);
@@ -75,8 +75,8 @@ Vue.component('invoice-table', {
 
 // Show filename, show clear button and change browse 
 //button text when a valid extension file is selected
-$(".browse-button input:file").change(function() {
-    $("input[name='attachment']").each(function() {
+$(".browse-button input:file").change(function () {
+    $("input[name='attachment']").each(function () {
         var fileName = $(this).val().split('/').pop().split('\\').pop();
         $(".filename").val(fileName);
         $(".browse-button-text").html('<i class="fa fa-refresh"></i> Change');
@@ -85,7 +85,7 @@ $(".browse-button input:file").change(function() {
 });
 
 //actions happening when the button is clicked
-$('.clear-button').click(function() {
+$('.clear-button').click(function () {
     $('.filename').val("");
     $('.clear-button').hide();
     $('.browse-button input:file').val("");

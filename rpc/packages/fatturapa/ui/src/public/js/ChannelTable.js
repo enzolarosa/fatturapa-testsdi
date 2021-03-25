@@ -6,7 +6,7 @@
 
 Vue.component('channel-table', {
     props: ['endpoint', 'title', 'description', 'button', 'action', 'home'],
-    data: function() {
+    data: function () {
         return {
             channels: [],
             channel: {
@@ -19,57 +19,57 @@ Vue.component('channel-table', {
             },
         };
     },
-    mounted: function() {
+    mounted: function () {
         this.loadData();
     },
-    created: function() {
+    created: function () {
         var self = this;
-        EventBus.$on('refreshTables', function() {
+        EventBus.$on('refreshTables', function () {
             self.loadData();
         });
     },
     methods: {
-    	addNewActor: function () {
-        var self = this;
-        sendReceiveData(this.channel, 'POST', '/sdi/rpc/actors', function() {
-          self.loadData();
-        });
-	    },
-	    removeActor: function (issuer) {	    
-        var self = this;
-        sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/actors/' + issuer, function() {
-          self.loadData();
-        });
-	    },
-      	addNewChannel: function () {
-        var self = this;
-        sendReceiveData(this.cedente, 'POST', '/sdi/rpc/channels', function() {
-          self.loadData();
-        });
-	    },
-	    removeChannel: function (issuer) {
-        var self = this;
-        sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/channels/' + issuer, function() {
-          self.loadData();
-        });
-	    },
-	    addNewCedente: function (issuer) {
-        var self = this;
-        sendReceiveData(this.cedente, 'POST', '/sdi/rpc/channels/?id=' + issuer, function() {
-          self.loadData();
-        });
-	    },
-	    removeCedente: function (issuer,cedente) {
-        var self = this;
-        sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/channels/' + cedente , function() {
-          self.loadData();
-        });
-	    },
-        loadData: function() {
+        addNewActor: function () {
+            var self = this;
+            sendReceiveData(this.channel, 'POST', '/sdi/rpc/actors', function () {
+                self.loadData();
+            });
+        },
+        removeActor: function (issuer) {
+            var self = this;
+            sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/actors/' + issuer, function () {
+                self.loadData();
+            });
+        },
+        addNewChannel: function () {
+            var self = this;
+            sendReceiveData(this.cedente, 'POST', '/sdi/rpc/channels', function () {
+                self.loadData();
+            });
+        },
+        removeChannel: function (issuer) {
+            var self = this;
+            sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/channels/' + issuer, function () {
+                self.loadData();
+            });
+        },
+        addNewCedente: function (issuer) {
+            var self = this;
+            sendReceiveData(this.cedente, 'POST', '/sdi/rpc/channels/?id=' + issuer, function () {
+                self.loadData();
+            });
+        },
+        removeCedente: function (issuer, cedente) {
+            var self = this;
+            sendReceiveData(this.channel, 'DELETE', '/sdi/rpc/channels/' + cedente, function () {
+                self.loadData();
+            });
+        },
+        loadData: function () {
             var self = this;
             var request = new XMLHttpRequest();
             request.open("GET", self.home + self.endpoint);
-            request.onload = function() {
+            request.onload = function () {
                 if (request.status == 200) {
                     if (request.responseText) {
                         var data = JSON.parse(request.responseText);
