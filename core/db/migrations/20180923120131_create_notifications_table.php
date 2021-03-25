@@ -1,8 +1,8 @@
 <?php
 
-
 use FatturaPa\Core\Models\MigrationManager;
 use Illuminate\Database\Connection as DB;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateNotificationsTable extends MigrationManager
 {
@@ -12,7 +12,7 @@ class CreateNotificationsTable extends MigrationManager
     public function up()
     {
         if (!$this->schema->hasTable('notifications')) {
-            $this->schema->create('notifications', function (Illuminate\Database\Schema\Blueprint $table) {
+            $this->schema->create('notifications', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('invoice_id');
                 $table->foreign('invoice_id')->references('id')->on('invoices')->change();

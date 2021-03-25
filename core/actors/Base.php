@@ -68,7 +68,7 @@ class Base
     {
         new Database();
         $dateTime = Base::getDateTime();
-        $Notification = Notification::create(
+        return Notification::create(
             [
                 'invoice_id' => $invoice_id,
                 'type' => $type,
@@ -79,8 +79,6 @@ class Base
                 'ctime' => $dateTime->date
             ]
         );
-
-        return $Notification;
     }
     public static function receive($notification_blob, $filename, $type, $invoice_id)
     {

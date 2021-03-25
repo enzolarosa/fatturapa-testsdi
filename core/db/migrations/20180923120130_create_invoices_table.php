@@ -1,6 +1,5 @@
 <?php
 
-
 use FatturaPa\Core\Models\MigrationManager;
 use Illuminate\Database\Connection as DB;
 
@@ -12,7 +11,7 @@ class CreateInvoicesTable extends MigrationManager
     public function up()
     {
         if (!$this->schema->hasTable('invoices')) {
-            $this->schema->create('invoices', function (Illuminate\Database\Schema\Blueprint $table) {
+            $this->schema->create('invoices', function (\Illuminate\Database\Schema\Blueprint $table) {
                 $table->increments('id');
                 $table->integer('remote_id')->nullable();
                 $table->string('nomefile');
