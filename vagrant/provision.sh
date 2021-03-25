@@ -101,12 +101,11 @@ cp /home/vagrant/provision/ssh/id_rsa* /home/vagrant/.ssh/
 chmod 400 /home/vagrant/.ssh/id_rsa*
 
 # FatturaPA
-cd /home/vagrant/fatturapa-testsdi
-sudo cp /home/vagrant/provision/fatturapa/core_config.php /home/vagrant/fatturapa-testsdi/core/config.php
-sudo cp /home/vagrant/provision/fatturapa/soap_config.php /home/vagrant/fatturapa-testsdi/soap/config.php
-sudo cp /home/vagrant/provision/fatturapa/env.fatturapa /home/vagrant/fatturapa-testsdi/rpc/.env
-sudo chown -R vagrant:vagrant /home/vagrant/fatturapa-testsdi
-cd /home/vagrant/fatturapa-testsdi
+cd /home/vagrant/fatturapa
+sudo cp /home/vagrant/provision/fatturapa/core_config.php /home/vagrant/fatturapa/core/config.php
+sudo cp /home/vagrant/provision/fatturapa/soap_config.php /home/vagrant/fatturapa/soap/config.php
+sudo cp /home/vagrant/provision/fatturapa/env.fatturapa /home/vagrant/fatturapa/rpc/.env
+sudo chown -R vagrant:vagrant /home/vagrant/fatturapa
 composer install
 composer update
 sudo chown vagrant core/storage/time_travel.json
@@ -118,7 +117,7 @@ sudo chown -R vagrant storage/framework
 sudo chown -R vagrant bootstrap/cache
 php artisan key:generate
 php artisan migrate:fresh --seed
-cd /home/vagrant/fatturapa-testsdi/core
+cd /home/vagrant/fatturapa/core
 php vendor/bin/phinx migrate -c config-phinx.php
 
 # Restart services
