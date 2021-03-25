@@ -1,15 +1,16 @@
 <?php
 
-
 namespace FatturaPa\Core\Actors;
 
 use DateInterval;
 use DateTime;
 use Exception;
+use FatturaPa\Core\Models\Actor;
 use FatturaPa\Core\Models\Channel;
 use FatturaPa\Core\Models\Database;
 use FatturaPa\Core\Models\Notification;
 use InvalidArgumentException;
+use SoapFault;
 use URL;
 
 define('TIME_TRAVEL_DB', __DIR__ . '/../../core/storage/time_travel.json');
@@ -27,16 +28,15 @@ class Base
         $data = json_decode(file_get_contents(TIME_TRAVEL_DB), true);
         $data['real_time'] = DateTime::__set_state($data['real_time']);
         $data['simulated_time'] = DateTime::__set_state($data['simulated_time']);
-
         return $data;
     }
 
     public static function resetTime()
     {
         $data = array(
-            'real_time'      => new DateTime(),
+            'real_time' => new DateTime(),
             'simulated_time' => new DateTime(),
-            'speed'          => 1.0,
+            'speed' => 1.0
         );
         self::persist($data);
     }
@@ -67,7 +67,6 @@ class Base
         $data['real_time'] = $real_time_now;
         $data['simulated_time'] = $simulated_time_now;
         self::persist($data);
-
         return $data['simulated_time'];
     }
 
@@ -75,19 +74,17 @@ class Base
     {
         new Database();
         $dateTime = Base::getDateTime();
-        $Notification = Notification::create(
+        return Notification::create(
             [
                 'invoice_id' => $invoice_id,
-                'type'       => $type,
-                'status'     => $status,
-                'blob'       => $notification_blob,
-                'actor'      => Base::getActor(),
-                'nomefile'   => $filename,
-                'ctime'      => $dateTime->date,
+                'type' => $type,
+                'status' => $status,
+                'blob' => $notification_blob,
+                'actor' => Base::getActor(),
+                'nomefile' => $filename,
+                'ctime' => $dateTime->date
             ]
         );
-
-        return $Notification;
     }
 
     public static function receive($notification_blob, $filename, $type, $invoice_id)
@@ -105,7 +102,7 @@ class Base
 
     public static function dispatchNotification($service, $addressee, $endpoint, $operation, $fileSdI)
     {
-        echo 'dispatchNotification to: ' . $addressee . '<br/>';
+        echo 'dispatchNotification to: ' . $addressee . '<br/>' . PHP_EOL;
         $service->__setLocation(HOSTMAIN . $addressee . "/soap/$endpoint/");
         $sent = false;
         try {
@@ -115,7 +112,6 @@ class Base
             echo "SOAP Fault: (faultcode: {" . $e->faultcode . "}, faultstring: {" . $e->faultstring . "})";
             exit;
         }
-
         return $sent;
     }
 
@@ -133,8 +129,8 @@ class Base
             $actor = $urlData[1];
         }
 
-        $issuers = self::getActors();
-        if (!in_array($actor, $issuers)) {
+        $actors = self::getActors();
+        if (!in_array($actor, $actors)) {
             abort(404);
         }
 
@@ -153,7 +149,6 @@ class Base
         foreach ($channels->toArray() as $channel) {
             $issuers[] = $channel['issuer'];
         }
-
         return $issuers;
     }
 
@@ -163,24 +158,24 @@ class Base
         try {
             $channels = Channel::select(['issuer'])->distinct()->get();
         } catch (Exception $ex) {
+
         }
         $actors = array('sdi');
         foreach ($channels->toArray() as $channel) {
             $actors[] = "td" . $channel['issuer'];
         }
-
         return $actors;
     }
 
     public static function getChannels()
     {
-        $Channelslist = Channel::all();
-
+        $Actorslist = Actor::select(['id'])->distinct()->get();
         $channels = array();
-        foreach ($Channelslist as $k => $channel) {
-            $channels[$channel['cedente']] = $channel['issuer'];
+        foreach ($Actorslist->toArray() as $k => $channel) {
+            $cedente = Channel::where('issuer', '=', $channel['id'])->pluck('cedente');
+            $channels[$k]['id'] = $channel['id'];
+            $channels[$k]['cedenti'] = $cedente->toArray();
         }
-
         return $channels;
     }
 
@@ -199,7 +194,6 @@ class Base
         if ($xml === false) {
             throw new InvalidArgumentException("Cannot load XML\n");
         }
-
         return $xml;
     }
 }

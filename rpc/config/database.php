@@ -55,14 +55,14 @@ return [
         ],
 
         'pgsql' => [
-            'driver'   => 'pgsql',
-            'host'     => env('DB_HOST', 'localhost'),
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', 'localhost'),
             'database' => env('DB_DATABASE', 'testsdi'),
             'username' => env('DB_USERNAME', 'www-data'),
             'password' => env('DB_PASSWORD', 'www-data'),
-            'charset'  => 'utf8',
-            'prefix'   => '',
-            'schema'   => 'public',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
         ],
 
         'sqlsrv' => [
